@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -12,7 +13,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,6 +26,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
     }
 
     buildFeatures {
@@ -62,11 +64,17 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'org.jetbrains:annotations:16.0.2'
+    annotationProcessor 'androidx.room:room-compiler:2.2.6'
 
+    //multidex
+    implementation 'com.android.support:multidex:1.0.3'
 
     // LIFE cycle dependencies and arch component
     def lifecycle_version = "2.3.0"
     def nav_version = "2.3.4"
+    def room_version = "2.2.5"
+    def paging_version = "2.1.2"
+
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"
@@ -83,19 +91,19 @@ dependencies {
     // Lifecycles only (without ViewModel or LiveData)
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
 
+    //Room Database
+    implementation "androidx.paging:paging-runtime:$paging_version"
+
+    testImplementation "androidx.paging:paging-common:$lifecycle_version"
+
+    implementation "androidx.room:room-rxjava2:$room_version"
+    implementation "androidx.room:room-guava:$room_version"
+
     // Saved state module for ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
-
-
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
-    // optional - helpers for implementing LifecycleOwner in a Service
-    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
-
-    // optional - ProcessLifecycleOwner provides a lifecycle for the whole application process
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycle_version"
-
-    // optional - ReactiveStreams support for LiveData
+    //ReactiveStreams support for LiveData
     implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
 

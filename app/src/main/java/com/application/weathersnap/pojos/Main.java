@@ -7,7 +7,7 @@ public class Main{
 
     @SerializedName("temp")
     @Expose
-    private double temperture;
+    private double temperature;
 
     @SerializedName("pressure")
     @Expose
@@ -17,15 +17,15 @@ public class Main{
     private double humidity;
 
 
-    private double getTemperture() {
-        return temperture;
+    public double getTemperture() {
+        return temperature;
     }
 
-    private int getPressure() {
+    public int getPressure() {
         return pressure;
     }
 
-    private double getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 

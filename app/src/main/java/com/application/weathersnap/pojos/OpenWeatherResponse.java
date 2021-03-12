@@ -9,7 +9,7 @@ public class OpenWeatherResponse {
 
     @SerializedName("weather")
     @Expose
-    private List<Weather> weather;
+    private List<Weather> weatherList;
 
     @SerializedName("main")
     @Expose
@@ -27,24 +27,29 @@ public class OpenWeatherResponse {
     @Expose
     private String name;
 
-    private List<Weather> getWeather() {
-        return weather;
+    public Weather getWeather() {
+        if (weatherList != null) {
+            return weatherList.get(0);
+        }
+        return new Weather();
     }
 
-    private Main getMain() {
+    public Main getMain() {
         return main;
     }
 
-    private Wind getWind() {
+    public Wind getWind() {
         return wind;
     }
 
-    private Sys getSys() {
+    public Sys getSys() {
         return sys;
     }
 
-    private String getName() {
-        return name;
+    public String getName() {
+        return name + ", " + sys.getCountry();
     }
+
+
 
 }
