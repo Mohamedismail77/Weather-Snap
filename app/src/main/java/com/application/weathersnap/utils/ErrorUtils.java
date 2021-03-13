@@ -1,7 +1,8 @@
 package com.application.weathersnap.utils;
 
 
-import com.pountech.andoird.ela.retrofit.ServiceGenerator;
+
+import com.application.weathersnap.retrofit.ServiceGenerator;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
