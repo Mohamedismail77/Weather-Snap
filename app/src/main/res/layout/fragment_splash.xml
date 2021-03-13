@@ -30,10 +30,12 @@
         android:visibility="gone"
         />
 
-    <AutoCompleteTextView
-        android:layout_width="match_parent"
+    <EditText
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/permissionMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fetchLocation"
         android:id="@+id/cityName"
         android:layout_marginHorizontal="24dp"
         android:background="@drawable/inbut_bg"
@@ -41,6 +43,17 @@
         android:layout_marginTop="12dp"
         android:hint="@string/city_name"
         android:padding="8dp"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toTopOf="@id/cityName"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/fetchLocation"
         android:visibility="gone"
         />
 

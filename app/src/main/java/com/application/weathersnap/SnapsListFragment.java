@@ -1,8 +1,10 @@
 package com.application.weathersnap;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -13,9 +15,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -42,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SnapsListFragment extends Fragment {
 
 
+    private static final int CAMERA_PERMISSION_REQUEST = 254;
     public SnapsViewModel snapsViewModel;
     private FragmentSnapsListBinding snapsListBinding;
     private SnapsAdapter snapsAdapter;
@@ -90,7 +96,7 @@ public class SnapsListFragment extends Fragment {
     }
 
     private void startCameraActivity() {
-        startActivity(new Intent(getActivity(),CameraActivity.class));
+        checkCameraPermission();
     }
 
     private void initAction() {
@@ -122,6 +128,49 @@ public class SnapsListFragment extends Fragment {
         });
 
         itemTouchHelper.attachToRecyclerView(snapsListBinding.snapsList);
+    }
+
+    private void checkCameraPermission(){
+        if(isPermissionsGranted()) {
+            startActivity(new Intent(getActivity(),CameraActivity.class));
+        } else if (isNeverAskAgainChecked()) {
+            showPermissionMessage();
+        } else {
+            askForPermission();
+        }
+    }
+
+
+    private boolean isPermissionsGranted() {
+        return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean isNeverAskAgainChecked() {
+        return !(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.CAMERA) &&
+                ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE));
+    }
+
+    private void showPermissionMessage() {
+        Toast.makeText(getContext(),"Please Give Camera and storage permission",Toast.LENGTH_LONG).show();
+    }
+
+    private void askForPermission() {
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                CAMERA_PERMISSION_REQUEST);
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (isPermissionsGranted()) {
+                startActivity(new Intent(getActivity(),CameraActivity.class));
+            } else {
+                showPermissionMessage();
+            }
+        }
     }
 
 

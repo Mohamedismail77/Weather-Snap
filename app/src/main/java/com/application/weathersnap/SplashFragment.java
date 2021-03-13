@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,12 +40,15 @@ public class SplashFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         splashBinding = FragmentSplashBinding.inflate(inflater,container,false);
         weatherViewModel = new ViewModelProvider(getActivity()).get(WeatherViewModel.class);
-        checkLocationPermission();
         observeWeatherSnap();
         return splashBinding.getRoot();
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkLocationPermission();
+    }
 
     private void checkLocationPermission(){
         if(isLocationPermissionGranted()) {
@@ -69,6 +74,7 @@ public class SplashFragment extends Fragment {
     private void showLocationMessage() {
         splashBinding.permissionMessage.setVisibility(View.VISIBLE);
         splashBinding.cityName.setVisibility(View.VISIBLE);
+        splashBinding.fetchLocation.setVisibility(View.VISIBLE);
         setupCityNameData();
     }
 
@@ -78,7 +84,9 @@ public class SplashFragment extends Fragment {
     }
 
     private void setupCityNameData() {
-
+        splashBinding.fetchLocation.setOnClickListener(v -> {
+            weatherViewModel.getWeatherForCity(splashBinding.cityName.getText().toString());
+        });
     }
 
     private void observeWeatherSnap() {
@@ -111,6 +119,8 @@ public class SplashFragment extends Fragment {
         if (requestCode == LOCATION_PERMISSION_REQUEST) {
             if (isLocationPermissionGranted()) {
                 weatherViewModel.getCurrentLocation();
+            } else {
+                showLocationMessage();
             }
         }
     }

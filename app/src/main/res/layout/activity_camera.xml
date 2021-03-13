@@ -72,8 +72,19 @@
                 tools:text="Partialy cloude"
                 android:text="@{snap.weatherConditionDescription}"
                 android:textColor="@color/white"
+                android:id="@+id/desc"
                 />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{snap.location}"
+                app:layout_constraintTop_toBottomOf="@id/desc"
+                app:layout_constraintStart_toStartOf="@id/wTemp"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     <Button

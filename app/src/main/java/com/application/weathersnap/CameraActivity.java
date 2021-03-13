@@ -328,7 +328,7 @@ public class CameraActivity extends AppCompatActivity {
             WeatherSnap weatherSnap = snapsViewModel.getSnap();
             weatherSnap.setImageUri(image.getAbsolutePath());
             snapsViewModel.saveSnap(weatherSnap);
-
+            finish();
         } else {
             Toast.makeText(getApplicationContext(),
                     "Error during image saving", Toast.LENGTH_LONG).show();
