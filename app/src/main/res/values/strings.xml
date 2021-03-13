@@ -2,5 +2,13 @@
     <string name="app_name">Weather Snap</string>
     <string name="tempC">%d &#8451;</string>
     <string name="undo_deleted">Snap deleted: %s</string>
+    <string name="title_activity_camera">FullscreenActivity</string>
+    <string name="take_snap">Take Snap</string>
+    <string name="you_don_t_have_snaps_yet_ncreate_one_now_d">You don\'t have snaps yet \n create one now</string>
+    <string name="take_now">Take Now</string>
+    <string name="location_is_required_to_get_weather_data_please_enable_location_permission_in_settings_or_enter_city_name">Location is required to get weather data please enable location permission in settings or enter city name</string>
+    <string name="city_name">City Name</string>
+    <string name="network_error">There was a problem with your internet connection check it and try again later…</string>
+
 
 </resources>

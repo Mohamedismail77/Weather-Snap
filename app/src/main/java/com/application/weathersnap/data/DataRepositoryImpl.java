@@ -18,7 +18,7 @@ public class DataRepositoryImpl implements DataRepository{
     private final OpenWeatherService openWeatherService;
     private final WeatherSnapDao  weatherSnapDao;
     private final WeatherSnap currentWeatherSnap = new WeatherSnap();
-    private final String appID = "";
+    private final String appID = "3e15e3ed3633b0ac40ef1c8d5945a468";
 
     public DataRepositoryImpl(OpenWeatherService openWeatherService, WeatherSnapDao weatherSnapDao) {
         this.openWeatherService = openWeatherService;

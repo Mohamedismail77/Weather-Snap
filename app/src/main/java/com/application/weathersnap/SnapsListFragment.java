@@ -1,5 +1,8 @@
 package com.application.weathersnap;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -11,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,20 +30,21 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SnapsListFragment extends Fragment {
 
 
+    private static final int CAMERA_REQUEST = 1234;
     public SnapsViewModel snapsViewModel;
     private FragmentSnapsListBinding snapsListBinding;
-
+    private SnapsAdapter snapsAdapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         snapsListBinding = FragmentSnapsListBinding.inflate(inflater,container,false);
-
+        snapsListBinding.setLifecycleOwner(this);
         snapsViewModel = new ViewModelProvider(requireActivity()).get(SnapsViewModel.class);
 
         //Initial snaps List
-        SnapsAdapter snapsAdapter = new SnapsAdapter();
+        snapsAdapter = new SnapsAdapter();
         snapsListBinding.snapsList.setAdapter(snapsAdapter);
-        snapsViewModel.getSnapsList().observe(getViewLifecycleOwner(),snapsAdapter::submitList);
+        snapsViewModel.getSnapsList().observe(getViewLifecycleOwner(),this::setSnapListData);
 
         initAction();
 
@@ -47,10 +52,28 @@ public class SnapsListFragment extends Fragment {
             // Todo Open Image In Image Intent
         });
 
+        snapsListBinding.btnTakeSnap.setOnClickListener(btn->{
+            startCameraActivity();
+        });
+
+        snapsListBinding.floatingTakeSnap.setOnClickListener(v -> {
+            startCameraActivity();
+        });
+
         return snapsListBinding.getRoot();
     }
 
-    public void initAction() {
+    private void setSnapListData(PagedList<WeatherSnap> list) {
+        snapsAdapter.submitList(list);
+        snapsListBinding.emptyMessage.setVisibility(list.size() > 0 ? View.GONE : View.VISIBLE);
+        snapsListBinding.btnTakeSnap.setVisibility(list.size() > 0 ? View.GONE : View.VISIBLE);
+    }
+
+    private void startCameraActivity() {
+        startActivityForResult(new Intent(getActivity(),CameraActivity.class),CAMERA_REQUEST);
+    }
+
+    private void initAction() {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
 
             @Override
@@ -79,5 +102,15 @@ public class SnapsListFragment extends Fragment {
         });
 
         itemTouchHelper.attachToRecyclerView(snapsListBinding.snapsList);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST) {
+            if (requestCode == Activity.RESULT_OK) {
+                // save to list
+            }
+        }
     }
 }
