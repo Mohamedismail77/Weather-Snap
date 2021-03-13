@@ -10,5 +10,6 @@
     <string name="city_name">City Name</string>
     <string name="network_error">There was a problem with your internet connection check it and try again later…</string>
 
+    <string name="facebook_app_id">457540358702413</string>
 
 </resources>

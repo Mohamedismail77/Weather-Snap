@@ -2,6 +2,8 @@ package com.application.weathersnap;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
+
 import dagger.hilt.android.HiltAndroidApp;
 
 @HiltAndroidApp

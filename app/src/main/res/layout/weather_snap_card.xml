@@ -68,6 +68,15 @@
                 tools:text="Partialy cloude"
                 android:text="@{snap.weatherConditionDescription}"/>
 
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/com_facebook_button_icon"
+                android:background="@color/com_facebook_blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

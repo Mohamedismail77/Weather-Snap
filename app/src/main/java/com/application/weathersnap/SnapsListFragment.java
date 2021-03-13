@@ -3,7 +3,12 @@ package com.application.weathersnap;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +27,14 @@ import com.application.weathersnap.data.WeatherSnap;
 import com.application.weathersnap.databinding.FragmentSnapsListBinding;
 import com.application.weathersnap.paging.SnapsAdapter;
 import com.application.weathersnap.paging.SnapsViewModel;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -30,7 +42,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SnapsListFragment extends Fragment {
 
 
-    private static final int CAMERA_REQUEST = 1234;
     public SnapsViewModel snapsViewModel;
     private FragmentSnapsListBinding snapsListBinding;
     private SnapsAdapter snapsAdapter;
@@ -49,7 +60,16 @@ public class SnapsListFragment extends Fragment {
         initAction();
 
         snapsAdapter.setSnapClickListener(weatherSnap -> {
-            // Todo Open Image In Image Intent
+            File image = new File(weatherSnap.getImageUri());
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+            SharePhoto photo = new SharePhoto.Builder()
+                    .setBitmap(bitmap)
+                    .build();
+            SharePhotoContent content = new SharePhotoContent.Builder()
+                    .addPhoto(photo)
+                    .build();
+            ShareDialog.show(this, content);
         });
 
         snapsListBinding.btnTakeSnap.setOnClickListener(btn->{
@@ -70,7 +90,7 @@ public class SnapsListFragment extends Fragment {
     }
 
     private void startCameraActivity() {
-        startActivityForResult(new Intent(getActivity(),CameraActivity.class),CAMERA_REQUEST);
+        startActivity(new Intent(getActivity(),CameraActivity.class));
     }
 
     private void initAction() {
@@ -104,13 +124,5 @@ public class SnapsListFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(snapsListBinding.snapsList);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST) {
-            if (requestCode == Activity.RESULT_OK) {
-                // save to list
-            }
-        }
-    }
+
 }
