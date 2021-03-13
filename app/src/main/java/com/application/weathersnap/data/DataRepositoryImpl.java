@@ -19,6 +19,7 @@ public class DataRepositoryImpl implements DataRepository{
     private final WeatherSnapDao  weatherSnapDao;
     private final WeatherSnap currentWeatherSnap = new WeatherSnap();
     private final String appID = "3e15e3ed3633b0ac40ef1c8d5945a468";
+    private final String units = "metric";
 
     public DataRepositoryImpl(OpenWeatherService openWeatherService, WeatherSnapDao weatherSnapDao) {
         this.openWeatherService = openWeatherService;
@@ -27,7 +28,7 @@ public class DataRepositoryImpl implements DataRepository{
 
     @Override
     public Flowable<ApiResponse<WeatherSnap, ApiError>> getWeatherStatesByGeoLocation(double lat, double lon) {
-        return openWeatherService.getCurrentWeatherByLatLan(lat,lon, appID)
+        return openWeatherService.getCurrentWeatherByLatLan(lat,lon, units,appID)
                         .subscribeOn(Schedulers.io())
                         .map((Function<OpenWeatherResponse,ApiResponse<WeatherSnap,ApiError>>) this::mappingWeatherResponse)
                         .onErrorReturn(DataRepositoryImpl::errorHandeler);
@@ -35,7 +36,7 @@ public class DataRepositoryImpl implements DataRepository{
 
     @Override
     public Flowable<ApiResponse<WeatherSnap, ApiError>> getWeatherStatesByCityName(String city) {
-        return openWeatherService.getCurrentWeatherByCityName(city, appID)
+        return openWeatherService.getCurrentWeatherByCityName(city, units,appID)
                 .subscribeOn(Schedulers.io())
                 .map((Function<OpenWeatherResponse,ApiResponse<WeatherSnap,ApiError>>) this::mappingWeatherResponse)
                 .onErrorReturn(DataRepositoryImpl::errorHandeler);
@@ -81,6 +82,11 @@ public class DataRepositoryImpl implements DataRepository{
             }
         }
         return ApiResponse.network();
+    }
+
+    @Override
+    public WeatherSnap getCurrentSnap() {
+        return currentWeatherSnap;
     }
 
     //For testing purpose

@@ -7,25 +7,59 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.util.Size;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.application.weathersnap.data.WeatherSnap;
+import com.application.weathersnap.databinding.ActivityCameraBinding;
+import com.application.weathersnap.paging.SnapsViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
+@AndroidEntryPoint
 public class CameraActivity extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -108,30 +142,31 @@ public class CameraActivity extends AppCompatActivity {
 
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
-
+    Button button;
+    ConstraintLayout view;
+    ImageView imageView;
+    WeatherViewModel snapsViewModel;
+    FrameLayout mainContainer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_camera);
+        ActivityCameraBinding cameraBinding = DataBindingUtil.setContentView(this,R.layout.activity_camera);
 
+        snapsViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
+        cameraBinding.setSnap(snapsViewModel.getSnap());
+        mainContainer = findViewById(R.id.mainContainer);
+        //view = findViewById(R.id.container);
+        button = findViewById(R.id.camera_capture_button);
+        //imageView = findViewById(R.id.imageTaken);
+
+        view = findViewById(R.id.container);
+        imageView = findViewById(R.id.imageTaken);
         mVisible = true;
-//        mControlsView = findViewById(R.id.fullscreen_content_controls);
-//        mContentView = findViewById(R.id.fullscreen_content);
 
-        // Set up the user interaction to manually show or hide the system UI.
-//        mContentView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                toggle();
-//            }
-//        });
         previewView = findViewById(R.id.viewFinder);
         startCamera();
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-//        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
     }
 
 
@@ -159,13 +194,71 @@ public class CameraActivity extends AppCompatActivity {
 
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
+        ImageCapture imageCapture =
+                new ImageCapture.Builder()
+                        .setTargetRotation(mainContainer.getDisplay().getRotation())
+                        .build();
+        ImageAnalysis imageAnalysis =
+                new ImageAnalysis.Builder()
+                        .setTargetResolution(new Size(1920 , 1080))
+                        .build();
+
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector,imageCapture, imageAnalysis,preview);
+
+        button.setOnClickListener(v -> {
+
+            imageCapture.takePicture(Executors.newSingleThreadExecutor(), new ImageCapture.OnImageCapturedCallback() {
+                @Override
+                public void onCaptureSuccess(@NonNull ImageProxy image) {
+                    super.onCaptureSuccess(image);
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // Stuff that updates the UI
+                            captureImage(image);
+                        }
+                    });
+
+
+                }
+
+                @Override
+                public void onError(@NonNull ImageCaptureException exception) {
+                    super.onError(exception);
+                }
+            });
+
+
+        });
+
     }
+
+    private void captureImage(@NonNull ImageProxy image) {
+        imageView.setImageBitmap(imageProxyToBitmap(image));
+        imageView.setRotation(image.getImageInfo().getRotationDegrees());
+        Bitmap b = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        view.draw(c);
+        saveImage(b);
+        image.close();
+    }
+
+    private Bitmap imageProxyToBitmap(ImageProxy image)
+    {
+        ImageProxy.PlaneProxy planeProxy = image.getPlanes()[0];
+        ByteBuffer buffer = planeProxy.getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
@@ -203,6 +296,43 @@ public class CameraActivity extends AppCompatActivity {
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
+    }
+
+    public void saveImage(Bitmap bitmap) {
+//        BitmapDrawable drawable = (BitmapDrawable) bmImage.getDrawable();
+//        Bitmap bitmap = drawable.getBitmap();
+        File sdCardDirectory = Environment.getExternalStorageDirectory();
+        Log.d("TAG", "saveImage: "+sdCardDirectory.getAbsolutePath());
+        String title = "IMG_"+new Date().getTime();
+        MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, title, "yourDescription");
+
+
+        File image = new File(sdCardDirectory, title);
+        boolean success = false;
+        FileOutputStream outStream;
+        try {
+            outStream = new FileOutputStream(image);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            /* 100 to keep full quality of the image */
+            outStream.flush();
+            outStream.close();
+            success = true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (success) {
+            Toast.makeText(getApplicationContext(), "Image saved with success",
+                    Toast.LENGTH_LONG).show();
+            WeatherSnap weatherSnap = snapsViewModel.getSnap();
+            weatherSnap.setImageUri(image.getAbsolutePath());
+            snapsViewModel.saveSnap(weatherSnap);
+
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Error during image saving", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

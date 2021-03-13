@@ -19,6 +19,7 @@ public class SnapsViewModel extends ViewModel {
     public static int PAGE_SIZE = 30;
     public static boolean PLACEHOLDERS = true;
 
+
     @ViewModelInject
     public SnapsViewModel(DataRepository dataRepository,@Assisted SavedStateHandle savedStateHandle) {
         this.dataRepository = dataRepository;
@@ -41,5 +42,6 @@ public class SnapsViewModel extends ViewModel {
     public void deleteSnap(WeatherSnap weatherSnap) {
         dataRepository.deleteSnap(weatherSnap);
     }
+
 
 }

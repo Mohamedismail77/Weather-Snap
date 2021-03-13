@@ -24,26 +24,26 @@
             <ImageView
                 android:id="@+id/imageView"
                 image_url="@{snap.imageUri}"
-                android:layout_width="125dp"
-                android:layout_height="150dp"
-                android:scaleType="centerInside"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:scaleType="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                />
 
 
             <TextView
                 android:id="@+id/wTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.format(@string/tempC,snap.temperature)}"
-                android:textSize="32sp"
+                android:text="@{String.valueOf(snap.temperature)+@string/tempC}"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toStartOf="@id/wIcon"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="17 &#8451;"
                 android:layout_marginStart="24dp"
-                android:layout_marginLeft="24dp"
                 />
 
             <ImageView
@@ -61,12 +61,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/wTemp"
+                app:layout_constraintTop_toBottomOf="@id/wIcon"
                 app:layout_constraintStart_toStartOf="@id/wTemp"
                 android:layout_marginTop="10dp"
                 android:textSize="16sp"
                 tools:text="Partialy cloude"
-                android:text="@{snap.weatherConditionIcon}"/>
+                android:text="@{snap.weatherConditionDescription}"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

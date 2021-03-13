@@ -140,4 +140,12 @@ public class WeatherViewModel extends ViewModel {
     public LiveData<ApiResponse<WeatherSnap,ApiError>> getWeatherSnap(){
         return weatherSnap;
     }
+
+    public void saveSnap(WeatherSnap weatherSnap) {
+        dataRepository.saveSnap(weatherSnap);
+    }
+
+    public WeatherSnap getSnap() {
+        return dataRepository.getCurrentSnap();
+    }
 }

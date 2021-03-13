@@ -14,6 +14,7 @@ public interface OpenWeatherService {
     @Headers({"Accept: application/json"})
     @GET(ApiRoutes.CURRENT_WEATHER)
     Flowable<OpenWeatherResponse> getCurrentWeatherByCityName(@Query(ApiRoutes.CITY_QUERY) String cityName,
+                                                              @Query(ApiRoutes.UNITES) String units,
                                                               @Query(ApiRoutes.APP_ID) String apiKey);
 
 
@@ -21,6 +22,7 @@ public interface OpenWeatherService {
     @GET(ApiRoutes.CURRENT_WEATHER)
     Flowable<OpenWeatherResponse> getCurrentWeatherByLatLan(@Query(ApiRoutes.LAT_QUERY) double latitude,
                                                               @Query(ApiRoutes.LON_QUERT) double longitude,
+                                                              @Query(ApiRoutes.UNITES) String units,
                                                               @Query(ApiRoutes.APP_ID) String apiKey);
 
 }

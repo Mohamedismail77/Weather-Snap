@@ -26,7 +26,7 @@ public class Weather{
     }
 
     public String getIcon() {
-        return icon;
+        return "http://openweathermap.org/img/wn/"+icon+"@2x.png";
     }
 
 

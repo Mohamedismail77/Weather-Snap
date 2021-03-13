@@ -25,4 +25,5 @@ public interface DataRepository {
 
     void deleteSnap(WeatherSnap weatherSnap);
 
+    WeatherSnap getCurrentSnap();
 }

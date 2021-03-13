@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="snap"
+            type="com.application.weathersnap.data.WeatherSnap" />
+    </data>
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.WeatherSnap.FullscreenContainer"
-    tools:context=".CameraActivity">
+    tools:context=".CameraActivity"
+    android:id="@+id/mainContainer"
+    >
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -14,19 +23,69 @@
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-
-        <Button
-            android:id="@+id/camera_capture_button"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginBottom="50dp"
-            android:scaleType="fitCenter"
-            android:text="Take Photo"
-            android:layout_gravity="bottom|center"
-            android:elevation="2dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container"
+        >
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageTaken"
+        />
 
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/wTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:text="@{String.valueOf(snap.temperature)+@string/tempC}"
+            android:textColor="@color/white"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toStartOf="@id/wIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="48 &#8451;"
+            />
+
+        <ImageView
+                android:id="@+id/wIcon"
+                image_url="@{snap.weatherConditionIcon}"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:layout_constraintStart_toEndOf="@id/wTemp"
+                app:layout_constraintTop_toTopOf="@id/wTemp"
+                tools:src="@android:drawable/ic_menu_info_details"
+                android:layout_marginStart="12dp"
+                android:layout_marginLeft="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/wTemp"
+                app:layout_constraintStart_toStartOf="@id/wTemp"
+                android:layout_marginTop="10dp"
+                android:textSize="16sp"
+                tools:text="Partialy cloude"
+                android:text="@{snap.weatherConditionDescription}"
+                android:textColor="@color/white"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/camera_capture_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="50dp"
+        android:scaleType="fitCenter"
+        android:text="Take Photo"
+        android:layout_gravity="bottom|center"
+        android:elevation="2dp" />
+
+    </FrameLayout>
+
+</layout>
