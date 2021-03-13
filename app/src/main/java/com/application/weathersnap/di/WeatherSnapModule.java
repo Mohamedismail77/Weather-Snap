@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import com.application.weathersnap.apiservices.OpenWeatherService;
+import com.application.weathersnap.data.DataRepository;
+import com.application.weathersnap.data.DataRepositoryImpl;
 import com.application.weathersnap.data.WeatherSnapDao;
 import com.application.weathersnap.data.WeatherSnapDatabase;
 
@@ -27,8 +30,14 @@ public class WeatherSnapModule {
 
     @Provides
     @Singleton
-    public WeatherSnapDao prividesWeatherSnapDao(WeatherSnapDatabase database) {
+    public WeatherSnapDao providesWeatherSnapDao(WeatherSnapDatabase database) {
         return database.weatherSnapDao();
+    }
+
+    @Provides
+    @Singleton
+    public DataRepository providesDataRepository(OpenWeatherService openWeatherService, WeatherSnapDao weatherSnapDao){
+        return new DataRepositoryImpl(openWeatherService,weatherSnapDao);
     }
 
 }

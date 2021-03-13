@@ -42,6 +42,5 @@ public class RetrofitModule {
         return new OkHttpClient.Builder().build();
     }
 
-
 }
 
